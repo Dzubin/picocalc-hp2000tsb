@@ -1,0 +1,102 @@
+HOW TO RUN EACH BUILD                                            Thomas Dzubin
+
+"SD card" means the PicoCalc's FAT32 card (put it in a card reader, or use the
+PicoCalc as a USB card reader, to copy files onto it).
+
+The programs are on the release page of the project (the .uf2 files for the
+PicoCalc and the .exe files for Windows). The system each program runs, the disc
+and tapes, come in two zip files on the same page: hp2000access-data.zip and
+hp2000f-data.zip. Each holds one folder (hp2000access or hp2000f) with the files
+that program needs. Those files are Hewlett-Packard's software, not part of this
+project's license (see README.md).
+
+There are two systems, each as a PicoCalc program and a Windows program:
+
+   HP 2000 Access  (the main system, has the contributed library)
+   HP 2000F        (the system you used in the 1970s)
+
+----------------------------------------------------------------------------
+1. HP 2000 ACCESS ON THE PICOCALC  (RP2350)
+----------------------------------------------------------------------------
+Flash the program:
+  File   hp2000access-RP2350.uf2   (project folder)
+  Copy to the RP2350 drive that appears when the PicoCalc is in BOOTSEL mode
+  (hold BOOTSEL while powering on, or press ~ in a PicoCalc app).
+
+Put the system on the SD card: unzip hp2000access-data.zip at the top level of
+the card, so that the card holds a folder  \hp2000access  with
+     SYSTEM-2883.disc       (23.9 MB, the system disc with the library)
+     HIBERNATE-2883.tape    (4.3 MB, the matching HIBERNATE tape)
+     IOP-2100.tape          (the I/O Processor program)
+     22687-11002_Rev-1812.tape   (the Master Control Program, needed by R only)
+Older files there (SYSTEM-7900.disc, SYSTEM-7905.disc ...) are not used and can
+stay.
+
+Run:
+  Start the program. Press B (normal start). Type the date as DAY/YY (for
+  example 282/26) and the time as HHMM. When the banner HP22687A-1812 shows on
+  the operator console, press F2 (user terminal) and press RETURN once.
+  Log on with HELLO-B001,RICK (other accounts: A000 OZZIE, A001 HARIET,
+  B000 DAVID). Library: LIBRARY lists it, GET-$AMAZE loads a program.
+  ALWAYS finish with F4 before switching off. F4 asks: H = HIBERNATE (whole system
+  to the tape, slow), S = SLEEP (quick, onto the disc only; start with B next time),
+  D = SLEEP and also dump the changes to SLEEP-2883.tape. The menu returns when it is
+  done. HP's advice: SLEEP daily, HIBERNATE weekly. To recover from a SLEEP tape press S
+  at the menu instead of R (it needs SLEEP-2883.tape in the same folder). If the disc was not shut down properly, press R (reload
+  from the HIBERNATE tape) instead of B.
+
+----------------------------------------------------------------------------
+2. HP 2000 ACCESS ON WINDOWS
+----------------------------------------------------------------------------
+Make a folder, put hp2000access-Windows.exe in it and unzip hp2000access-data.zip
+there, so that the folder hp2000access (with SYSTEM-2883.disc, HIBERNATE-2883.tape,
+IOP-2100.tape and 22687-11002_Rev-1812.tape in it) is next to the exe. Run
+hp2000access-Windows.exe from that folder. To start again from the clean library
+system, unzip hp2000access-data.zip over the folder again.
+Use it exactly as in section 1; the PC keyboard acts as the PicoCalc's
+(F1 operator, F2 user, F3 tape on line, F4 shut down, ESC or Q to leave).
+The window opens about 1280 x 640 pixels (a 640 x 320 screen shown at twice the
+size) and shows 80 characters per line in the normal 8 x 10 font, with lower
+case letters. The PicoCalc itself shows 40 characters per line. The window can
+be resized; the picture keeps its shape.
+
+----------------------------------------------------------------------------
+3. HP 2000F ON THE PICOCALC  (RP2350)
+----------------------------------------------------------------------------
+Flash the program:
+  File   hp2000f-RP2350.uf2   (project folder), to the RP2350 drive as above.
+
+Put the system on the SD card: unzip hp2000f-data.zip at the top level of the
+card, so that the card holds a folder  \hp2000f  with
+     SYSTEM-2883.disc            (23.9 MB, a new 2000F system on a 2883 disc)
+     HIBERNATE-2883.tape
+     24343-60001_Rev-1710.abin   (cross-loader and I/O Processor program)
+     24339-60001_Rev-1710.abin   (TSB loader for the 2883)
+
+Run:
+  Start the program and press R the first time (it reloads the system from
+  the HIBERNATE tape). On the operator console (F1) type the date and time
+  when asked, for example 282/26 then RETURN, then 1200 then RETURN. When
+  READY appears press F2 and log on with HELLO-B001,RICK. The 2000F has no
+  library; use F4 to shut down.
+
+----------------------------------------------------------------------------
+4. HP 2000F ON WINDOWS
+----------------------------------------------------------------------------
+Make a folder, put hp2000f-Windows.exe in it and unzip hp2000f-data.zip there, so
+that the folder hp2000f (SYSTEM-2883.disc, HIBERNATE-2883.tape,
+24343-60001_Rev-1710.abin, 24339-60001_Rev-1710.abin) is next to the exe. Run
+hp2000f-Windows.exe from that folder and use it as in section 3. To start
+again, unzip hp2000f-data.zip over the folder.
+
+----------------------------------------------------------------------------
+NOTES
+----------------------------------------------------------------------------
+* The programs change SYSTEM-2883.disc and HIBERNATE-2883.tape as they run.
+  The zip files hold the untouched originals; unzip them again to start over.
+* On the PicoCalc the title screen shows "SD FAILS n" after a run: the card
+  refused n transfers and they were retried. A few per hibernate is normal.
+* The Windows programs show 80 columns (the PicoCalc programs show 40). Both
+  show lower case; TSB converts commands to capitals itself, so you may type
+  in either case.
+* The Linux builds are made on the Linux machine (see README.md).

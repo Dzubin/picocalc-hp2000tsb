@@ -1,0 +1,41 @@
+diff --git a/drivers/fat32.c b/drivers/fat32.c
+index d8141f2..997ac81 100644
+--- a/drivers/fat32.c
++++ b/drivers/fat32.c
+@@ -1494,25 +1494,19 @@ fat32_error_t fat32_write(fat32_file_t *file, const void *buffer, size_t size, s
+         *bytes_written = 0;
+     }
+ 
+-    uint32_t old_file_size = file->file_size;
+-
+-    // Ensure current_cluster is correct for current file position
+-    uint32_t cluster = file->start_cluster;
+-    uint32_t cluster_offset = file->position / bytes_per_cluster;
+-    for (uint32_t i = 0; i < cluster_offset; i++)
++    if (size == 0)
+     {
+-        uint32_t next_cluster;
+-        RETURN_ON_ERROR(read_cluster_fat_entry(cluster, &next_cluster));
+-        if (next_cluster >= FAT32_FAT_ENTRY_EOC)
+-        {
+-            // Allocate a new cluster and link it
+-            uint32_t new_cluster = 0;
+-            RETURN_ON_ERROR(allocate_and_link_cluster(cluster, &new_cluster));
+-            next_cluster = new_cluster;
+-        }
+-        cluster = next_cluster;
++        return FAT32_OK; // Nothing to write
+     }
+-    file->current_cluster = cluster;
++
++    uint32_t old_file_size = file->file_size;
++
++    // The clusters the write needs are allocated below, and seek_to_cluster() finds the
++    // one for the position afterwards. (A walk along the chain here used to allocate a
++    // cluster at a cluster-aligned end of file, and the allocation below then linked a
++    // second one after the last cluster, leaving the first unreachable.)
++    uint32_t cluster;
++    uint32_t cluster_offset;
+ 
+     size_t total_written = 0;
+     const uint8_t *src = (const uint8_t *)buffer;

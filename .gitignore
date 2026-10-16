@@ -1,0 +1,47 @@
+# Build output
+/build/
+*.uf2
+*.elf
+*.bin
+*.hex
+*.map
+*.dis
+
+# Bundled source archives (fetch the Pico SDK / starter separately)
+*.zip
+
+# Editor / OS cruft
+.DS_Store
+Thumbs.db
+
+# Local AI-assistant notes, not for the public repo
+CLAUDE.md
+
+# Extra build directories (RP2350 / RP2040 / Windows / Linux)
+/build-*/
+
+# Desktop (SDL2) build outputs copied to the top-level folder
+*.exe
+/hp2000access-Linux
+/hp2000f-Linux
+/libSDL2-2.0.so.0
+
+# Hewlett-Packard material and big working copies: not in the public repository.
+# The system discs and tapes are published as zip files with the release instead.
+/docs/manuals/
+/docs/kits/
+/docs/simh-source/
+/docs/simh-docs/
+/backup/
+/run-windows-*/
+/library-downloads/
+/library-build-*/
+/from-picocalc/
+*.disc
+*.tape
+*.abin
+/archive/hp2000e/*.uf2
+/archive/hp2000e/*.exe
+/archive/hp2000e/build-*/
+/archive/hp2000e/library-build-*/
+/archive/hp2000e/run-windows/

@@ -1,0 +1,30 @@
+set cpu 2100,16K,FP
+set ALL DISABLED
+set TTY ENABLED,SC=10
+set DPD ENABLED,SC=11
+set PTR ENABLED,SC=13
+set MUX ENABLED,SC=14
+set MUXC ENABLED,SC=16
+set TBG ENABLED,SC=17
+set MSD ENABLED,SC=20
+set DPC 13210
+set MSC 13183
+set console log=full.log
+attach -E DPC0 trace-7900.disc
+attach -E PTR 24286-60001_Rev-1438.abin
+deposit S 000000
+boot PTR
+assert T=102077
+deposit S 000000
+deposit P 000002
+set debug full.dbg
+set cpu debug=instr;reg
+go until "IS SYSTEM ON SUBCHANNEL 0?"
+reply "YES\r"
+go until "DATE?  "
+reply "142/18\r"
+go until "TIME?  "
+reply "1740\r"
+go until "READY"
+step 400000
+exit

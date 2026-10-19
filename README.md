@@ -389,7 +389,7 @@ Open this folder, pick the board (Pico 2) and press Compile.
 
 ### From a terminal
 
-Set `PICO_SDK_PATH` to your Pico SDK checkout (SDK 2.2.0), then:
+Set `PICO_SDK_PATH` to your Pico SDK checkout (SDK 2.3.1), then:
 
 ```bash
 cmake -B build-rp2350-access -G Ninja -DPICO_BOARD=pico2 -DHP_SYSTEM=ACCESS
@@ -512,27 +512,33 @@ by Blair Leduc (the LCD, audio, south-bridge keyboard and SD card drivers). It i
 Copyright © 2025 Blair Leduc. The Raspberry Pi Pico SDK it builds against is
 licensed separately by Raspberry Pi Ltd. (BSD-3-Clause).
 
-The vendored copy is unchanged except for **four fixes**:
+The vendored copy is Blair Leduc's `picocalc-text-starter` as it was on 2026-10-18
+(commit `85a002e`, "Upgrade to SDK 2.3.1"), with **four small local fixes** that
+are not in his repository yet:
 
-1. In `picocalc-text-starter-main/drivers/fat32.c`, `get_next_free_cluster()` now
-   advances its search hint past the cluster it just handed out; without that,
-   every later allocation re-scans the clusters already given out, and a long
-   sequential write to the SD card looks hung.
-2. In the same file, `fat32_dir_read()` skips deleted entries first (an entry marked
-   0xE5, whether an 8.3 entry or a long-name part) and checks that a long-name part fits
-   the filename buffer; `link_entry()` compares the 0xE5 marker as an unsigned byte.
-   Before, a deleted long-name part was read as a live one and wrote 13 bytes at
-   `filename + 468` of a 256-byte stack buffer.
-3. In `picocalc-text-starter-main/drivers/sdcard.c`, the wait for a busy card is timed by
-   the clock (0.5 s) and not by counting 10000 bytes, every command except CMD0 waits for
-   the card first, and a write returns an error if the card is still busy after it. Without
-   it, a card that was still programming a block ignored the next command and reads and
-   writes failed on good sectors.
+1. In `picocalc-text-starter-main/drivers/fat32.c`, `fat32_write()` no longer walks
+   the cluster chain, allocating a cluster at a cluster-aligned end of file, before
+   it allocates the clusters the write needs. That walk could leave a cluster
+   unreachable (a leak). A write of zero bytes returns at once.
+2. In the same file, `fat32_dir_read()` copies the last part of a long file name of
+   248 to 255 characters as far as it fits; upstream drops that part.
+3. In `picocalc-text-starter-main/drivers/sdcard.c`, a command is not sent to a card
+   that is still busy after the 0.5 s wait.
+4. In `picocalc-text-starter-main/drivers/lcd.c`, `lcd_putstr()` cuts a string off at
+   the right edge of the display, because the line buffer holds exactly one row of
+   text.
 
-4. In `picocalc-text-starter-main/drivers/fat32.c`, `fat32_write()` no longer allocates a cluster twice
-   when a write starts exactly at the end of a cluster (one `break` in the loop that walks the chain).
-   Before, every such write left one cluster in use that no file owned (28 MB lost on a real card).
+Earlier versions of this copy carried other local changes, and those are now in
+the upstream code: the search-hint fix in `get_next_free_cluster()`
+([#30](https://github.com/BlairLeduc/picocalc-text-starter/pull/30)), the
+deleted-entry fixes in `fat32_dir_read()` and `link_entry()`
+([#32](https://github.com/BlairLeduc/picocalc-text-starter/pull/32)), the timed
+busy-card wait in `sdcard.c`
+([#33](https://github.com/BlairLeduc/picocalc-text-starter/pull/33)) and
+`lcd_unblit()` ([#31](https://github.com/BlairLeduc/picocalc-text-starter/pull/31)).
+`audio.pio` is exactly as downloaded: it now accepts 20 to 20000 Hz
+([#29](https://github.com/BlairLeduc/picocalc-text-starter/pull/29)), where it used
+to accept only 100 to 2000 Hz. Everything else is exactly as downloaded.
 
-Fixes 2 and 3 were sent to the author as pull requests (the patches, standalone tests and
-write-ups are in `docs/fat32-pr/`). Fix 4 is prepared as a pull request but not sent yet
-(`docs/fat32-pr/PULL-REQUEST-cluster-leak.md`). Everything else is exactly as downloaded.
+The write-up of the `fat32_write()` fix, with its standalone test, is in
+`docs/fat32-pr/PULL-REQUEST-cluster-leak.md`.

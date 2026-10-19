@@ -7,6 +7,10 @@ the version here matches the `VERSION` define in `hp2000access_const.h` and
 
 ## [Unreleased]
 
+- Updated the vendored `picocalc-text-starter` to Blair Leduc's code of 2026-10-18 (commit
+  `85a002e`) and moved to Pico SDK 2.3.1. The search-hint, deleted-entry and busy-card fixes this
+  copy carried are in his code now; four small local fixes remain (README, Third-party). The audio
+  driver in it now sounds 20 to 20000 Hz, where it used to be silent outside 100 to 2000 Hz.
 ## [V1.00A] - 2026-10-16
 
 First public release. The project works. The history of its development was cleared on 2026-10-11; from
